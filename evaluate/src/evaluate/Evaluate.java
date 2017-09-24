@@ -9,25 +9,25 @@ public class Evaluate {
 	Stack<Character> ops = new Stack<Character>();
 	Stack<Fraction> vals = new Stack<Fraction>();
 	Scanner input = new Scanner(System.in);
-	for(int m=0;m<30;m++) {
+	int examNumber = Integer.parseInt(args[1]);
+    int rightNumber = 0;
+	System.out.println("本次测试共"+examNumber+"题，共"+examNumber*10+"分");
+	for(int m=0;m<examNumber;m++) {
 		String s = random();
 		//String s = input.nextLine();
-		System.out.println(s);
+		System.out.println(s+"=");
 		for(int i=0;i<s.length();i++) {
 			char s1 = s.charAt(i);
-			//1+2-3System.out.println(s1);
 		/*左括号压栈 */
 		if (s1 == '(') 
 			ops.push(s1);
 		/*右括号把之前的数和运算符出栈进行运算*/
 		else if(s1 == ')') {
 			while(ops.peek()!= '(') {
-				//int a = 0,b = 0;
 				int result[] = new int[2];
 				Fraction a = vals.pop();
 				Fraction b = vals.pop();
 				result = caculate(ops.pop(),a.getNumerator(),a.getDenominator(),b.getNumerator(),b.getDenominator());
-				//int result[] = caculate(ops.pop(),vals.pop().getNumerator(),vals.pop().getDenominator(),vals.pop().getNumerator(),vals.pop().getDenominator());
 				vals.push(new Fraction(result[0],result[1]));
 			}
 
@@ -35,18 +35,15 @@ public class Evaluate {
 		}
 		else if(s1 == '+' || s1 == '-' || s1 == '*' || s1 == '÷') {  //遇到运算符的情况
 			while(!ops.empty() && JudgePriority(s1,ops.peek())) {    //判断运算符的优先级
-				//int a = 0,b = 0;
 				int result[] = new int[2];
 				Fraction a = vals.pop();
 				Fraction b = vals.pop();
 				////当前运算符如果比栈顶运算符的优先级高，将之前的运算符和数字出栈进行运算
 				result = caculate(ops.pop(),a.getNumerator(),a.getDenominator(),b.getNumerator(),b.getDenominator()); 
-				//int result[] = caculate(ops.pop(),vals.pop().getNumerator(),vals.pop().getDenominator(),vals.pop().getNumerator(),vals.pop().getDenominator());
 				vals.push(new Fraction(result[0],result[1]));  //将计算出的数字入栈				
 			}
 
 			ops.push(s1);
-			//System.out.println("ha");
 		}
 		else {
 			if (s1 >= '0' && s1 <= '9') {
@@ -72,7 +69,6 @@ public class Evaluate {
 			}
 			//整数的分母是1
 			else buf2.append('1');
-			//System.out.println(buf1.toString()+"/"+buf2.toString());
             //入栈
 			vals.push(new Fraction(Integer.parseInt(buf1.toString()),Integer.parseInt(buf2.toString())));
 
@@ -80,7 +76,6 @@ public class Evaluate {
 		}
 		}
 		while(!ops.empty()) {
-			//System.out.println("hello");
 			int result[] = new int[2];
 			Fraction a = vals.pop();
 			Fraction b = vals.pop();
@@ -93,20 +88,24 @@ public class Evaluate {
          //如果分母为1，只输出分子
          String rightResult;
          if(result.denominator/k == 1) {
-        	 System.out.println(result.numerator/k);
+        	 //System.out.println(result.numerator/k);
              rightResult = result.numerator/k + "";
          }
          else { //输出分数
-        	 System.out.println(result.numerator/k+"/"+result.denominator/k);
+        	 //System.out.println(result.numerator/k+"/"+result.denominator/k);
         	 rightResult = result.numerator/k+"/"+result.denominator/k + "";
          }
          //判断用户输入的结果是否正确
          String userResult = input.nextLine();
-         if(userResult.equals(rightResult))
-        	 System.out.println("Well done!");
+
+         if(userResult.equals(rightResult)) {
+        	 System.out.println("Right!");
+        	 rightNumber++;        	 
+         }
          else
-        	 System.out.println("Wrong!");
+        	 System.out.println("Wrong!");        
 	}
+	 System.out.println("本次做对"+rightNumber+"题，得分为"+rightNumber*10+"分");
 
 	}
 //判断运算符的优先级
