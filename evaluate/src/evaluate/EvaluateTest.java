@@ -15,6 +15,7 @@ public class EvaluateTest {
 	public void testEvaluateAlgorithm() {
 		assertEquals("83",Evaluate.evaluateAlgorithm("4*1/2+9¡Â1/9"));
 		assertEquals("19/12",Evaluate.evaluateAlgorithm("2+1/3-3/4"));
+		assertEquals("226/9",Evaluate.evaluateAlgorithm("4/6-(2/3-8)¡Â(6¡Â5*1/4)"));
 	}
 	@Test
 	public void testJudgePriority() {		
@@ -43,6 +44,7 @@ public class EvaluateTest {
 		assertEquals(4,Evaluate.GCD(-8,12));
 		assertEquals(5,Evaluate.GCD(-10,-25));
 	}
+	
 
 
 }
