@@ -4,18 +4,42 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Stack;
 
-public class Evaluate {
-	public static void main(String[] args) {
-	Stack<Character> ops = new Stack<Character>();
-	Stack<Fraction> vals = new Stack<Fraction>();
-	Scanner input = new Scanner(System.in);
+
+public class Evaluate {  
+
+	public static void main(String[] args) {	
+	//Scanner input = new Scanner(System.in);
+	//int examNumber = 100; 
+	//-n传参
 	int examNumber = Integer.parseInt(args[1]);
-    int rightNumber = 0;
+	int rightNumber = 0;
 	System.out.println("本次测试共"+examNumber+"题，共"+examNumber*10+"分");
 	for(int m=0;m<examNumber;m++) {
 		String s = random();
+		while(s.charAt(s.length()-1) =='#')
+			s = random();
 		//String s = input.nextLine();
-		System.out.println(s+"=");
+		
+		System.out.println("("+(m+1)+")"+" "+s+"=");		
+         //判断用户输入的结果是否正确
+         Scanner input = new Scanner(System.in);
+         String userResult = input.nextLine();
+
+         if(userResult.equals(evaluateAlgorithm(s))) {
+        	 System.out.println("回答正确！");
+        	 rightNumber++;        	 
+         }
+         else
+        	 System.out.println("回答错误！正确结果为："+evaluateAlgorithm(s));        
+	}
+	 System.out.println("本次做对"+rightNumber+"题，得分为"+rightNumber*10+"，正确率为"+((double)rightNumber/examNumber)*100+"%");
+	}
+	
+	
+	//调度场算法，通过入栈出栈操作来计算结果
+	public static String evaluateAlgorithm(String s) {
+		Stack<Character> ops = new Stack<Character>();
+		Stack<Fraction> vals = new Stack<Fraction>();	
 		for(int i=0;i<s.length();i++) {
 			char s1 = s.charAt(i);
 		/*左括号压栈 */
@@ -71,9 +95,8 @@ public class Evaluate {
 			else buf2.append('1');
             //入栈
 			vals.push(new Fraction(Integer.parseInt(buf1.toString()),Integer.parseInt(buf2.toString())));
-
 			}
-		}
+		} 
 		}
 		while(!ops.empty()) {
 			int result[] = new int[2];
@@ -95,112 +118,162 @@ public class Evaluate {
         	 //System.out.println(result.numerator/k+"/"+result.denominator/k);
         	 rightResult = result.numerator/k+"/"+result.denominator/k + "";
          }
-         //判断用户输入的结果是否正确
-         String userResult = input.nextLine();
-
-         if(userResult.equals(rightResult)) {
-        	 System.out.println("Right!");
-        	 rightNumber++;        	 
-         }
-         else
-        	 System.out.println("Wrong!");        
-	}
-	 System.out.println("本次做对"+rightNumber+"题，得分为"+rightNumber*10+"分");
-
-	}
-//判断运算符的优先级
-public static boolean JudgePriority(char op1, char op2) {
-	if (op2 == '(' || op2 == ')')
-	    return false;
-	if ((op1 == '*' || op1 == '÷') && (op2 == '+' || op2 == '-'))
-	    return false;
-	else
-	    return true;
-    }
-//
-public  static int[] caculate(char op, int numerator1, int denominator1, int numerator2, int denominator2) {
-	int[] result = new int[2];
-	switch (op) {
-	case '+':
-		result[0] = numerator1*denominator2 + numerator2*denominator1; result[1]= denominator1*denominator2;
-	    return result;
-	case '-':
-		result[0] = numerator2*denominator1 - numerator1*denominator2; result[1]= denominator1*denominator2;
-	    return result;
-	case '*':
-		result[0] = numerator1*numerator2; result[1] = denominator1*denominator2;
-	    return result;
-	case '÷':
-	    result[0] = numerator2*denominator1; result[1] = numerator1*denominator2;  
-	    return result;
-	}
-	return result;
-}
-
-//求两个数的最大公约数
-public static int GCD(int a,int b) {
-	//取绝对值，避免是负数
-	a = Math.abs(a); 
-	b = Math.abs(b);
-	while(b!=0) {
-		int temp = a%b;
-		a = b;
-		b = temp;
-	}
-	return a;
-}
-
-//随机数产生的方法
-public static String random() {
-	Random oprandom = new Random();
-	Random fraction1 = new Random();
-	Random fraction2 = new Random();
-	//运算符个数
-	int opnumber = oprandom.nextInt(10)%10 +1;
-	//运算数个数
-	int valnumber = opnumber + 1;
-	String[] op = new String[opnumber];
-	String[] val = new String[valnumber];
-    //生成运算符数组
-	for (int i=0;i<opnumber;i++) {
-		int oprange = oprandom.nextInt(4)%4 + 1;
-		switch(oprange) {
-		case 1: op[i]="+";break;
-		case 2: op[i]="-";break;
-		case 3: op[i]="*";break;
-		case 4: op[i]="÷";
-		}
+         return rightResult;
 		
 	}
-
-	for (int j=0;j<valnumber;j++) {
-		int b = (int)(Math.random()*10) % 2; 
-		//整数
-		if(b == 0)
-			val[j] = (fraction1.nextInt(10)%10 +1) + "";
-		//分数
-		else {
-			int num = fraction1.nextInt(10)%10 +1;
-			int deno = fraction2.nextInt(10)%9 + 2;
-			while(num >= deno) {
-				num = fraction1.nextInt(10)%10 +1;
-				deno = fraction2.nextInt(10)%9 + 2;
-			}
-			val[j] = num + "/" + deno + "";	
-						
-		}
-			
-	}
-	//将随机生成的运算符和运算数生成一个字符串
-	String s1 = val[0];
-	String s2 = "";
-	for(int k=0;k<opnumber;k++) {
-		s2 = s2+op[k]+val[k+1];		
-	}
-	String s = s1+s2;
-    return s;
 	
-}
+    //判断运算符的优先级
+	public static boolean JudgePriority(char op1, char op2) {
+		if (op2 == '(' || op2 == ')')
+			return false;
+		if ((op1 == '*' || op1 == '÷') && (op2 == '+' || op2 == '-'))
+			return false;
+		else
+			return true;
+	}
+	
+	//对不同运算符进行运算
+	public  static int[] caculate(char op, int numerator1, int denominator1, int numerator2, int denominator2) { 
+		int[] result = new int[2];
+		switch (op) {
+		case '+': 
+			result[0] = numerator1*denominator2 + numerator2*denominator1; result[1]= denominator1*denominator2;
+			return result;
+		case '-':
+			result[0] = numerator2*denominator1 - numerator1*denominator2; result[1]= denominator1*denominator2;
+			return result;
+		case '*':
+			result[0] = numerator1*numerator2; result[1] = denominator1*denominator2;
+			return result;
+		case '÷':
+			result[0] = numerator2*denominator1; result[1] = numerator1*denominator2;
+			return result;
+		}
+		return result;
+	}
+	
+	//求两个数的最大公约数
+	public static int GCD(int a,int b) {
+		//取绝对值，避免是负数
+		a = Math.abs(a); 
+		b = Math.abs(b);
+		while(b!=0) {
+			int temp = a%b;
+			a = b;
+			b = temp;
+		}
+		return a;
+	}
+	
+	//产生随机运算式
+	public static String random() {
+		Random oprandom = new Random();
+		Random fraction1 = new Random();
+		Random fraction2 = new Random();
+		Random bracket1 = new Random();
+		Random bracket2 = new Random();
+		//运算符个数
+		int opnumber = oprandom.nextInt(5)%5+1;
+		//运算数个数
+		int valnumber = opnumber + 1;
+		String[] op = new String[opnumber];
+		String[] val = new String[valnumber];
+		
+		//生成运算符数组
+		for (int i=0;i<opnumber;i++) {
+			int oprange = oprandom.nextInt(4)%4 + 1;
+			switch(oprange) {
+			case 1: op[i]="+";break;
+			case 2: op[i]="-";break;
+			case 3: op[i]="*";break;
+			case 4: op[i]="÷";
+			} 
+		}
+		//生成运算数数组
+		for (int j=0;j<valnumber;j++) {
+			int b = (int)(Math.random()*10) % 2; 
+			//整数
+			if(b == 0)
+				val[j] = (fraction1.nextInt(10)%10 +1) + "";
+			//分数
+			else {
+				int num = fraction1.nextInt(10)%10 +1;
+				int deno = fraction2.nextInt(10)%9 + 2;
+				while(num >= deno) {
+					num = fraction1.nextInt(10)%10 +1;
+					deno = fraction2.nextInt(10)%9 + 2;
+				}
+				val[j] = num + "/" + deno + "";										
+			}		
+			
+		}
+		
+		int m = (int)(Math.random()*10) % 2;
+		if(m == 0) { //有括号
+			int o = (int)(Math.random()*10) % 2;
+			if (o == 0) {
+				int[] lval1 = new int[valnumber];
+				int[] rval1 = new int[valnumber];
+				//System.out.println("A");
+				for (int k=0;k<valnumber-1;k++) {					
+					int n = (int)(Math.random()*10) % 2;
+					if(n == 0 && rval1[k] != 1) {
+						lval1[k] = 1;          //标记为有左括号
+						val[k] = "(" + val[k]; //运算数之前加上左括号
+						int c = valnumber - 1;
+						int d = bracket1.nextInt(c)%(c-k) + (k+1); //找右括号的位置，d为大于k的数字
+						while (lval1[d] == 1)  //如果有右括号，再随机生成数字
+						d = bracket1.nextInt(c)%(c-k) + (k+1);
+						val[d] = val[d] +")";
+						rval1[d] = 1;          //标记为有右括号
+					} 
+				}
+				for(int u=0;u<valnumber;u++) {
+					if(lval1[u]==1&&rval1[u]==1) {
+						val[valnumber-1] = "#";
+						break;
+						}					
+				}
+			} 
+				  
+			else {
+				int[] lval2 = new int[valnumber];
+				int[] rval2 = new int[valnumber];
+				//System.out.println("B");
+				for (int k=valnumber-1;k>0;k--) {
+					
+					int n = (int)(Math.random()*10) % 2;
+					if(n == 0 && lval2[k] != 1) {
+						rval2[k] = 1;
+						val[k] = val[k] +")" ; //运算数之后加上右括号
+						//int c = 0;
+						int d = bracket2.nextInt(valnumber-1)%valnumber;
+						while (rval2[d] == 1 || d>=k)
+							d = bracket2.nextInt(valnumber-1)%valnumber;
+						val[d] = "(" + val[d];
+						lval2[d] = 1;
+					}
+				}
+				for(int u=0;u<valnumber;u++) {
+					if(lval2[u]==1&&rval2[u]==1) {
+						val[valnumber-1] = "#";
+						break;
+						}					
+				}
+			}
+			
+		}
+		
 
+		//将随机生成的运算符和运算数生成一个字符串
+		String s1 = val[0];
+		String s2 = "";
+		for(int k=0;k<opnumber;k++) {
+			s2 = s2+op[k]+val[k+1];
+		}
+		String s = s1+s2;
+		return s;
+	}
+	
 
 }
